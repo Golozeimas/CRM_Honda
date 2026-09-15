@@ -1,6 +1,7 @@
 import { useState, forwardRef, useImperativeHandle } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
+import { createLead } from '../../services/leads/createLead';
 
 export type FormState = 'normal' | 'loading' | 'success' | 'error';
 
@@ -83,11 +84,11 @@ export const LeadCaptureForm = forwardRef<LeadCaptureFormRef, LeadCaptureFormPro
     setFormState('loading');
 
     try {
-      // Simulação de envio para backend/CRM
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await createLead(data);
       setFormState('success');
       toast.success('Proposta solicitada com sucesso! Nossa equipe entrará em contato.');
-    } catch {
+    } catch (err) {
+      console.error('Error creating lead:', err);
       setFormState('error');
       toast.error('Falha no envio da proposta. Por favor, tente novamente.');
     }
