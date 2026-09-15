@@ -1,7 +1,12 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { PublicLandingPage } from "./pages/PublicLandingPage";
+
 export default function App() {
   return (
-    <div>
-      <h1>Honda CRM</h1>
-    </div>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<PublicLandingPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
