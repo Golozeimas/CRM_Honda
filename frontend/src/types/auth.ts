@@ -1,13 +1,24 @@
-export type LeadStatus = 'novo' | 'em_contato' | 'convertido' | 'perdido';
+export type LeadStatus = 'NOVO' | 'EM_CONTATO' | 'CONVERTIDO' | 'PERDIDO';
 
 export interface Lead {
   id: string;
+  /** Display name, e.g. "Andrew Peterson" */
   name: string;
+  /** Avatar initials, e.g. "AP" */
+  initials: string;
+  email: string;
+  /** Formatted phone number, e.g. "(86) 98124-9010" */
   whatsapp: string;
+  /** wa.me URL derived from the E.164 phone number */
+  whatsappUrl: string;
+  /** Internal model key, e.g. "CG 160" */
   model: string;
-  unit: 'teresina' | 'timon';
+  /** Display label for the model badge */
+  modelDisplay: string;
+  unit: 'TERESINA' | 'TIMON';
   status: LeadStatus;
-  createdAt: unknown;
+  /** Pre-formatted date string for table display, e.g. "15/09/2026 01:32" */
+  createdAt: string;
 }
 
 export interface AuthUser {
