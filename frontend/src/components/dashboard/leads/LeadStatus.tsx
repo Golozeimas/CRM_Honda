@@ -33,8 +33,15 @@ const STATUS_CONFIG: Record<LeadStatus, StatusConfig> = {
   },
 };
 
+const DEFAULT_CONFIG: StatusConfig = {
+  label: 'Novo',
+  badgeCls: 'bg-primary-fixed/50 text-primary',
+  dotCls: 'bg-primary',
+};
+
 export function LeadStatus({ status }: LeadStatusProps) {
-  const { label, badgeCls, dotCls } = STATUS_CONFIG[status];
+  const config = (status && STATUS_CONFIG[status]) || DEFAULT_CONFIG;
+  const { label, badgeCls, dotCls } = config;
 
   return (
     <span

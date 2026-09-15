@@ -3,7 +3,6 @@ import { logout } from '../../services/firebase/auth';
 
 const NAV_ITEMS = [
   { path: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
-  { path: '/leads',     icon: 'group',     label: 'Leads'     },
 ] as const;
 
 export function Sidebar() {

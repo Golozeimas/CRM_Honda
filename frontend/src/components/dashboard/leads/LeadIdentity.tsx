@@ -16,7 +16,7 @@ const AVATAR_CLS: Record<LeadStatus, string> = {
 };
 
 export function LeadIdentity({ initials, name, email, status }: LeadIdentityProps) {
-  const avatarCls = AVATAR_CLS[status];
+  const avatarCls = (status && AVATAR_CLS[status]) || AVATAR_CLS.NOVO;
 
   return (
     <div className="flex items-center gap-space-sm">

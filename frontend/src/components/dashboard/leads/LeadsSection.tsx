@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react';
-import type { Lead } from '../../../types/auth';
-import { LEADS_DATA } from '../../../data/leads.data';
+import { useMemo, useState, useEffect } from 'react';
+import { onSnapshot, query, orderBy } from 'firebase/firestore';
+import type { Lead, LeadStatus } from '../../../types/auth';
+import { leadsCollection } from '../../../services/firebase/firestore';
 import { LeadsHeader } from './LeadsHeader';
 import { LeadsToolbar } from './LeadsToolbar';
 import { LeadsTable } from './LeadsTable';
@@ -8,21 +9,102 @@ import { Pagination } from './Pagination';
 
 const PAGE_SIZE = 10;
 
-// Total leads count for the static dataset (matches the HTML metric: 128)
-const TOTAL_LEADS_COUNT = 128;
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0 || !parts[0]) return '?';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+function normalizeStatus(rawStatus?: unknown): LeadStatus {
+  if (typeof rawStatus === 'string') {
+    const upper = rawStatus.toUpperCase().trim();
+    if (upper === 'NOVO' || upper === 'EM_CONTATO' || upper === 'CONVERTIDO' || upper === 'PERDIDO') {
+      return upper;
+    }
+  }
+  return 'NOVO';
+}
 
 export function LeadsSection() {
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   // Filter state
-  const [search, setSearch]             = useState('');
+  const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
-  const [unitFilter, setUnitFilter]     = useState('ALL');
-  const [modelFilter, setModelFilter]   = useState('ALL');
+  const [unitFilter, setUnitFilter] = useState('ALL');
+  const [modelFilter, setModelFilter] = useState('ALL');
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
 
   // Action menu state — only one open at a time
   const [activeActionLeadId, setActiveActionLeadId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const q = query(leadsCollection as any, orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const fetchedLeads: Lead[] = snapshot.docs.map((doc) => {
+          const data: any = doc.data() || {};
+          let createdAtStr = '';
+          if (data.createdAt) {
+            try {
+              const date = typeof data.createdAt.toDate === 'function' 
+                ? data.createdAt.toDate() 
+                : new Date(data.createdAt);
+              if (!isNaN(date.getTime())) {
+                createdAtStr = new Intl.DateTimeFormat('pt-BR', {
+                  dateStyle: 'short',
+                  timeStyle: 'short',
+                }).format(date);
+              }
+            } catch {
+              createdAtStr = String(data.createdAt || '');
+            }
+          }
+
+          const name = String(data.name || 'Sem nome');
+          const initials = typeof data.initials === 'string' && data.initials ? data.initials : getInitials(name);
+          const status = normalizeStatus(data.status);
+          const unit = (data.unit && String(data.unit).toUpperCase() === 'TIMON') ? 'TIMON' : 'TERESINA';
+          const whatsapp = String(data.whatsapp || data.phone || '');
+          const rawDigits = whatsapp.replace(/\D/g, '');
+          const whatsappUrl = data.whatsappUrl || (rawDigits ? `https://wa.me/55${rawDigits}` : '#');
+          const model = String(data.model || 'outro');
+          const modelDisplay = String(data.modelDisplay || data.model || 'Modelo não especificado');
+          const email = String(data.email || '');
+
+          return {
+            id: doc.id,
+            name,
+            initials,
+            email,
+            whatsapp,
+            whatsappUrl,
+            model,
+            modelDisplay,
+            unit,
+            status,
+            createdAt: createdAtStr,
+          };
+        });
+
+        setLeads(fetchedLeads);
+        setIsLoading(false);
+        setError(null);
+      },
+      (err) => {
+        console.error('Error fetching leads:', err);
+        setError('Não foi possível carregar os leads.');
+        setIsLoading(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
 
   // ------------------------------------------------------------------
   // Derived: filtered collection
@@ -31,12 +113,15 @@ export function LeadsSection() {
   const filteredLeads = useMemo<Lead[]>(() => {
     const q = search.toLowerCase().trim();
 
-    return LEADS_DATA.filter((lead) => {
+    return leads.filter((lead) => {
       // Search matches name OR WhatsApp
+      const leadName = lead.name || '';
+      const leadWhatsapp = lead.whatsapp || '';
+      
       const matchesSearch =
         q === '' ||
-        lead.name.toLowerCase().includes(q) ||
-        lead.whatsapp.includes(q);
+        leadName.toLowerCase().includes(q) ||
+        leadWhatsapp.includes(q);
 
       const matchesStatus =
         statusFilter === 'ALL' || lead.status === statusFilter;
@@ -49,10 +134,9 @@ export function LeadsSection() {
 
       return matchesSearch && matchesStatus && matchesUnit && matchesModel;
     });
-  }, [search, statusFilter, unitFilter, modelFilter]);
+  }, [leads, search, statusFilter, unitFilter, modelFilter]);
 
-  // Total pages based on the FULL dataset count (simulates server-side total)
-  // For this static dataset, filtered count drives pagination instead
+  const TOTAL_LEADS_COUNT = leads.length;
   const totalPages = Math.max(1, Math.ceil(TOTAL_LEADS_COUNT / PAGE_SIZE));
 
   // When filters/search change, reset to page 1
@@ -104,6 +188,8 @@ export function LeadsSection() {
 
       <LeadsTable
         leads={filteredLeads}
+        isLoading={isLoading}
+        error={error}
         activeActionLeadId={activeActionLeadId}
         onToggleAction={handleToggleAction}
         onCloseAction={handleCloseAction}
