@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { logout } from '../../services/firebase/auth';
+import logoUrl from '../../assets/logo_sol_nascente.jpg';
 
 const NAV_ITEMS = [
   { path: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
@@ -18,9 +19,11 @@ export function Sidebar() {
       <div className="flex flex-col">
         {/* Branding */}
         <div className="h-16 px-space-md flex items-center gap-space-sm border-b border-surface-container-highest">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
-            <span className="material-symbols-outlined text-on-primary text-[20px]">two_wheeler</span>
-          </div>
+          <img
+            src={logoUrl}
+            alt="Sol Nascente CRM Honda"
+            className="w-8 h-8 rounded-lg object-cover flex-shrink-0"
+          />
           <div className="flex flex-col min-w-0">
             <span className="font-label-lg text-on-surface truncate leading-tight">Sol Nascente</span>
             <span className="font-label-sm text-primary uppercase font-bold tracking-wider">CRM Honda</span>
@@ -54,7 +57,7 @@ export function Sidebar() {
             CM
           </div>
           <div className="flex flex-col min-w-0 flex-1">
-            <span className="font-label-md text-on-surface font-semibold truncate leading-none">Carlos Mendonça</span>
+            <span className="font-label-md text-on-surface font-semibold truncate leading-none">João Matheus</span>
             <span className="font-label-sm text-on-surface-variant truncate mt-space-xs leading-none">Administrador</span>
           </div>
         </div>

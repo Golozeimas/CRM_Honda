@@ -74,14 +74,9 @@ export function LoginForm() {
 
       {/* Email field */}
       <div className="flex flex-col gap-1.5">
-        <div className="flex items-center justify-between">
-          <label htmlFor="login-email" className="font-label-lg text-label-lg font-semibold text-on-surface">
-            E-mail
-          </label>
-          <span className="font-label-sm text-label-sm text-secondary bg-surface-container px-2 py-0.5 rounded-md">
-            Corporativo
-          </span>
-        </div>
+        <label htmlFor="login-email" className="font-label-lg text-label-lg font-semibold text-on-surface">
+          E-mail
+        </label>
         <div className="relative">
           <span className="material-symbols-outlined absolute left-3 top-2.5 text-[20px] text-secondary pointer-events-none">
             alternate_email
@@ -141,12 +136,7 @@ export function LoginForm() {
             )}
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="font-label-lg text-label-lg text-on-surface">Manter conectado</span>
-          <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-primary/10 text-primary">
-            Produção
-          </span>
-        </div>
+        <span className="font-label-lg text-label-lg text-on-surface">Manter conectado</span>
       </label>
 
       {/* Submit */}

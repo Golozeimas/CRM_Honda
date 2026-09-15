@@ -1,6 +1,7 @@
 import { Navigate } from 'react-router-dom';
 import { LoginForm } from '../components/auth/LoginForm';
 import { useAuth } from '../contexts/useAuth';
+import logoUrl from '../assets/logo_sol_nascente.jpg';
 
 export function LoginPage() {
   const { user, loading } = useAuth();
@@ -24,22 +25,17 @@ export function LoginPage() {
         <div className="px-8 py-8 flex flex-col gap-space-lg">
           {/* Brand */}
           <div className="flex flex-col items-center gap-3 text-center">
-            <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center shadow-md">
-              <span
-                className="material-symbols-outlined text-on-primary text-[28px]"
-                style={{ fontVariationSettings: "'FILL' 1" }}
-              >
-                sports_motorsports
-              </span>
-            </div>
+            <img
+              src={logoUrl}
+              alt="Sol Nascente Honda"
+              className="w-14 h-14 rounded-2xl object-cover shadow-md"
+            />
             <div className="flex flex-col items-center gap-0.5">
               <span className="font-headline-xl text-headline-xl text-on-surface font-bold tracking-tight uppercase leading-none">
-                Sol Nascente
+                Sol Nascente - CRM
               </span>
-              <div className="flex items-center gap-1.5 mt-1">
+              <div className="flex items-center mt-1">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Honda</span>
-                <span className="w-1 h-1 rounded-full bg-secondary/50" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-secondary">Motos CRM</span>
               </div>
             </div>
           </div>
