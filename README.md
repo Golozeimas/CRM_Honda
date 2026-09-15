@@ -45,13 +45,18 @@ Cálculo Dinâmico dos KPIs do Funil
   - **Tabela de Leads Completa (`LeadsTable.tsx`)**:
     - Listagem dinâmica sincronizada em tempo real com o Cloud Firestore (`onSnapshot`).
     - Filtro combinado por texto (busca por Nome ou WhatsApp), Status, Unidade e Modelo.
-    - Paginação client-side configurada para 10 itens por página.
-    - **Alteração de Status Inline**: dropdown interativo diretamente na coluna de status, com feedback visual (loading spinner) e toast notifications.
+    - **Alteração de Status Inline**: dropdown interativo diretamente na coluna de status, com feedback visual e toast notifications.
     - Link direto para abertura de conversa no WhatsApp via API `wa.me`.
   - **Modal de Detalhes do Lead (`LeadDetailsModal.tsx`)**:
     - Visualização modal acionada pelo menu de ações ("Ver detalhes").
     - Exibe todas as informações consolidadas do lead: Nome, E-mail, WhatsApp, Unidade, Modelo de interesse, Status e data/hora de cadastro.
+    - Ações diretas no rodapé para edição rápida de dados ou exclusão.
     - Fechamento intuitivo via botão, clique no backdrop ou tecla `Escape`.
+  - **Modal de Edição de Dados Cadastrais (`LeadEditModal.tsx`)**:
+    - Permite a alteração do Nome completo, WhatsApp (com máscara automática), Modelo de interesse, Unidade e E-mail.
+    - Recalcula automaticamente as iniciais (`initials`) e a URL do WhatsApp (`whatsappUrl`), persistindo via `updateLead.ts`.
+  - **Exclusão com Confirmação Segura (`LeadDeleteConfirmModal.tsx`)**:
+    - Diálogo com aviso de operação irreversível antes de deletar o documento no Firestore via `deleteLead.ts`.
 
 ---
 
@@ -70,9 +75,9 @@ O fluxo de dados de um lead percorre as seguintes etapas:
                          ↓
 [DashboardPage] Recalcula KPIs e atualiza a Tabela de Leads instantaneamente
                          ↓
-[Vendedor] Interage via WhatsApp e altera o status na tabela (ex: EM_CONTATO)
+[Vendedor] Interage, edita dados cadastrais ou altera status (ex: EM_CONTATO)
                          ↓
-     [updateLeadStatus.ts] Operação parcial updateDoc({ status })
+   [updateDoc / deleteDoc] Operações persistidas diretamente no Firestore
                          ↓
 [KPIs e Tabela] Reagem em tempo real sem necessidade de recarregar a página
 ```

@@ -9,6 +9,8 @@ interface LeadActionsProps {
   onClose: () => void;
   onViewDetails?: (lead: Lead) => void;
   onChangeStatus?: (lead: Lead) => void;
+  onEditLead?: (lead: Lead) => void;
+  onDeleteLead?: (lead: Lead) => void;
 }
 
 export function LeadActions({
@@ -18,6 +20,8 @@ export function LeadActions({
   onClose,
   onViewDetails,
   onChangeStatus,
+  onEditLead,
+  onDeleteLead,
 }: LeadActionsProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -55,6 +59,16 @@ export function LeadActions({
     onClose();
   };
 
+  const handleEditLead = () => {
+    onEditLead?.(lead);
+    onClose();
+  };
+
+  const handleDeleteLead = () => {
+    onDeleteLead?.(lead);
+    onClose();
+  };
+
   return (
     <div ref={containerRef} className="relative inline-block text-right">
       <button
@@ -73,7 +87,7 @@ export function LeadActions({
       {isOpen && (
         <div
           role="menu"
-          className="absolute right-0 top-10 w-44 bg-surface-container-lowest rounded-xl shadow-lg p-space-xs z-30 flex flex-col"
+          className="absolute right-0 top-10 w-48 bg-surface-container-lowest rounded-xl shadow-lg p-space-xs z-30 flex flex-col border border-surface-container-highest"
         >
           <button
             role="menuitem"
@@ -82,6 +96,15 @@ export function LeadActions({
           >
             <span className="material-symbols-outlined text-[16px] text-secondary" aria-hidden="true">visibility</span>
             Ver detalhes
+          </button>
+
+          <button
+            role="menuitem"
+            onClick={handleEditLead}
+            className="w-full text-left px-space-sm py-space-xs hover:bg-surface-container-low rounded-lg font-label-sm text-on-surface flex items-center gap-space-xs cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[16px] text-secondary" aria-hidden="true">edit</span>
+            Editar lead
           </button>
 
           <button
@@ -100,6 +123,17 @@ export function LeadActions({
           >
             <span className="material-symbols-outlined text-[16px] text-secondary" aria-hidden="true">content_copy</span>
             Copiar WhatsApp
+          </button>
+
+          <div className="my-1 border-t border-surface-container-highest" />
+
+          <button
+            role="menuitem"
+            onClick={handleDeleteLead}
+            className="w-full text-left px-space-sm py-space-xs hover:bg-error-container/40 text-error rounded-lg font-label-sm flex items-center gap-space-xs cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[16px] text-error" aria-hidden="true">delete</span>
+            Excluir lead
           </button>
         </div>
       )}

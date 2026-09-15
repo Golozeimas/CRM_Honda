@@ -11,6 +11,8 @@ interface LeadsTableProps {
   onViewDetails?: (lead: Lead) => void;
   onChangeStatus?: (lead: Lead) => void;
   onStatusChange?: (leadId: string, newStatus: LeadStatus) => Promise<void>;
+  onEditLead?: (lead: Lead) => void;
+  onDeleteLead?: (lead: Lead) => void;
 }
 
 const TABLE_HEADERS = [
@@ -33,6 +35,8 @@ export function LeadsTable({
   onViewDetails,
   onChangeStatus,
   onStatusChange,
+  onEditLead,
+  onDeleteLead,
 }: LeadsTableProps) {
   return (
     <div className="overflow-x-auto">
@@ -86,6 +90,8 @@ export function LeadsTable({
                 onViewDetails={onViewDetails}
                 onChangeStatus={onChangeStatus}
                 onStatusChange={onStatusChange}
+                onEditLead={onEditLead}
+                onDeleteLead={onDeleteLead}
               />
             ))
           )}

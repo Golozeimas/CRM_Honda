@@ -6,9 +6,17 @@ interface LeadDetailsModalProps {
   lead: Lead | null;
   isOpen: boolean;
   onClose: () => void;
+  onEditLead?: (lead: Lead) => void;
+  onDeleteLead?: (lead: Lead) => void;
 }
 
-export function LeadDetailsModal({ lead, isOpen, onClose }: LeadDetailsModalProps) {
+export function LeadDetailsModal({
+  lead,
+  isOpen,
+  onClose,
+  onEditLead,
+  onDeleteLead,
+}: LeadDetailsModalProps) {
   // Close on Escape key press
   useEffect(() => {
     if (!isOpen) return;
@@ -24,6 +32,16 @@ export function LeadDetailsModal({ lead, isOpen, onClose }: LeadDetailsModalProp
   }, [isOpen, onClose]);
 
   if (!isOpen || !lead) return null;
+
+  const handleEdit = () => {
+    onClose();
+    onEditLead?.(lead);
+  };
+
+  const handleDelete = () => {
+    onClose();
+    onDeleteLead?.(lead);
+  };
 
   return (
     <div
@@ -150,13 +168,33 @@ export function LeadDetailsModal({ lead, isOpen, onClose }: LeadDetailsModalProp
         </div>
 
         {/* Modal Footer */}
-        <div className="px-6 py-4 bg-surface-container-low border-t border-surface-container-highest flex items-center justify-end">
+        <div className="px-6 py-4 bg-surface-container-low border-t border-surface-container-highest flex items-center justify-between">
           <button
-            onClick={onClose}
-            className="px-5 py-2 rounded-xl bg-surface-container-highest hover:bg-surface-container text-on-surface font-label-md font-semibold transition-colors cursor-pointer"
+            type="button"
+            onClick={handleDelete}
+            className="px-4 py-2 rounded-xl text-error hover:bg-error-container/40 font-label-md font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
           >
-            Fechar
+            <span className="material-symbols-outlined text-[18px]">delete</span>
+            <span>Excluir lead</span>
           </button>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleEdit}
+              className="px-4 py-2 rounded-xl bg-primary hover:bg-[#cc0000] text-on-primary font-label-md font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-[18px]">edit</span>
+              <span>Editar dados</span>
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 rounded-xl bg-surface-container-highest hover:bg-surface-container text-on-surface font-label-md font-semibold transition-colors cursor-pointer"
+            >
+              Fechar
+            </button>
+          </div>
         </div>
       </div>
     </div>

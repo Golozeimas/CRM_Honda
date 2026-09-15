@@ -13,6 +13,8 @@ interface LeadsSectionProps {
   isLoading?: boolean;
   error?: string | null;
   onViewDetails?: (lead: Lead) => void;
+  onEditLead?: (lead: Lead) => void;
+  onDeleteLead?: (lead: Lead) => void;
 }
 
 /**
@@ -74,6 +76,8 @@ export function LeadsSection({
   isLoading = false,
   error = null,
   onViewDetails,
+  onEditLead,
+  onDeleteLead,
 }: LeadsSectionProps) {
   // Filter state
   const [search, setSearch] = useState('');
@@ -171,6 +175,8 @@ export function LeadsSection({
         onCloseAction={handleCloseAction}
         onViewDetails={onViewDetails}
         onStatusChange={handleStatusChangeAction}
+        onEditLead={onEditLead}
+        onDeleteLead={onDeleteLead}
       />
 
       <Pagination

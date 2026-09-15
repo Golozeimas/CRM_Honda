@@ -12,6 +12,8 @@ interface LeadRowProps {
   onViewDetails?: (lead: Lead) => void;
   onChangeStatus?: (lead: Lead) => void;
   onStatusChange?: (leadId: string, newStatus: LeadStatus) => Promise<void>;
+  onEditLead?: (lead: Lead) => void;
+  onDeleteLead?: (lead: Lead) => void;
 }
 
 export function LeadRow({
@@ -22,6 +24,8 @@ export function LeadRow({
   onViewDetails,
   onChangeStatus,
   onStatusChange,
+  onEditLead,
+  onDeleteLead,
 }: LeadRowProps) {
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
 
@@ -93,6 +97,8 @@ export function LeadRow({
           onClose={onCloseAction}
           onViewDetails={onViewDetails}
           onChangeStatus={handleTriggerChangeStatus}
+          onEditLead={onEditLead}
+          onDeleteLead={onDeleteLead}
         />
       </td>
     </tr>
