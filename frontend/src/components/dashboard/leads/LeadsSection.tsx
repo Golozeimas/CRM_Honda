@@ -15,6 +15,60 @@ interface LeadsSectionProps {
   onViewDetails?: (lead: Lead) => void;
 }
 
+/**
+ * Normalizes a motorcycle model name or code into a canonical model group.
+ * Matches all variations across form inputs, display names, and Firestore values:
+ * - CG 160: 'cg160', 'cg 160', 'titan', 'CG 160 Titan', 'Honda CG 160'
+ * - Biz: 'biz', 'biz 125', 'Honda Biz 125', 'Honda Biz'
+ * - Pop: 'pop', 'pop110', 'pop 110i', 'Honda Pop 110i'
+ * - Bros: 'bros', 'nxr', 'nxr160', 'nxr 160 bros', 'Honda NXR 160 Bros'
+ * - Twister: 'twister', 'cb300', 'cb 300f', 'cb 300f twister', 'Honda CB 300F Twister'
+ * - PCX: 'pcx', 'honda pcx'
+ * - Outro: 'outro', 'outro modelo'
+ */
+function normalizeModelKey(raw?: string | null): string {
+  if (!raw) return '';
+  const clean = raw.toLowerCase().replace(/[^a-z0-9]/g, '');
+  if (!clean) return '';
+  if (clean.includes('cg') || clean.includes('titan')) return 'cg160';
+  if (clean.includes('biz')) return 'biz';
+  if (clean.includes('pop')) return 'pop';
+  if (clean.includes('bros') || clean.includes('nxr')) return 'bros';
+  if (clean.includes('twister') || clean.includes('cb300')) return 'twister';
+  if (clean.includes('pcx')) return 'pcx';
+  if (clean.includes('outro')) return 'outro';
+  return clean;
+}
+
+function matchesModelFilter(lead: Lead, filter: string): boolean {
+  if (!filter || filter === 'ALL') return true;
+
+  const target = filter.trim();
+  const leadModel = (lead.model || '').trim();
+  const leadDisplay = (lead.modelDisplay || '').trim();
+
+  // Direct exact match
+  if (leadModel === target || leadDisplay === target) return true;
+
+  // Direct case-insensitive match
+  const targetLower = target.toLowerCase();
+  if (
+    leadModel.toLowerCase() === targetLower ||
+    leadDisplay.toLowerCase() === targetLower
+  ) {
+    return true;
+  }
+
+  // Canonical normalized group match
+  const filterKey = normalizeModelKey(target);
+  if (!filterKey) return false;
+
+  const modelKey = normalizeModelKey(leadModel);
+  const displayKey = normalizeModelKey(leadDisplay);
+
+  return modelKey === filterKey || displayKey === filterKey;
+}
+
 export function LeadsSection({
   leads = [],
   isLoading = false,
@@ -56,8 +110,7 @@ export function LeadsSection({
       const matchesUnit =
         unitFilter === 'ALL' || lead.unit === unitFilter;
 
-      const matchesModel =
-        modelFilter === 'ALL' || lead.model === modelFilter;
+      const matchesModel = matchesModelFilter(lead, modelFilter);
 
       return matchesSearch && matchesStatus && matchesUnit && matchesModel;
     });

@@ -20,6 +20,16 @@ function normalizeStatus(rawStatus?: unknown): LeadStatus {
   return 'NOVO';
 }
 
+const MODEL_DISPLAY_FALLBACK: Record<string, string> = {
+  cg160: 'Honda CG 160',
+  biz: 'Honda Biz 125',
+  pop110: 'Honda Pop 110i',
+  nxr160: 'Honda NXR 160 Bros',
+  pcx: 'Honda PCX',
+  cb300: 'Honda CB 300F',
+  outro: 'Outro modelo',
+};
+
 export function useLeads() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -57,7 +67,13 @@ export function useLeads() {
           const rawDigits = whatsapp.replace(/\D/g, '');
           const whatsappUrl = data.whatsappUrl || (rawDigits ? `https://wa.me/55${rawDigits}` : '#');
           const model = String(data.model || 'outro');
-          const modelDisplay = String(data.modelDisplay || data.model || 'Modelo não especificado');
+          const normalizedModelKey = model.toLowerCase().trim();
+          const modelDisplay = String(
+            data.modelDisplay ||
+            MODEL_DISPLAY_FALLBACK[normalizedModelKey] ||
+            data.model ||
+            'Modelo não especificado'
+          );
           const email = String(data.email || '');
 
           return {

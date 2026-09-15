@@ -97,6 +97,8 @@ export function LeadsToolbar({
           <option value="POP">Honda Pop 110i</option>
           <option value="BROS">Honda NXR 160 Bros</option>
           <option value="TWISTER">Honda CB 300F Twister</option>
+          <option value="PCX">Honda PCX</option>
+          <option value="OUTRO">Outro modelo</option>
         </select>
         {CHEVRON}
       </div>
