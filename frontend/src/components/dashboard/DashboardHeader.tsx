@@ -1,8 +1,4 @@
-interface DashboardHeaderProps {
-  onNewLead?: () => void;
-}
-
-export function DashboardHeader({ onNewLead }: DashboardHeaderProps) {
+export function DashboardHeader() {
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
       {/* Page title */}
@@ -22,16 +18,6 @@ export function DashboardHeader({ onNewLead }: DashboardHeaderProps) {
             Showroom Online
           </span>
         </div>
-
-        {/* New lead action */}
-        <button
-          onClick={onNewLead}
-          className="flex items-center gap-space-xs bg-primary-container text-on-primary font-label-md px-space-md py-space-sm rounded-xl shadow-sm hover:bg-primary transition-all cursor-pointer"
-          aria-label="Adicionar novo lead"
-        >
-          <span className="material-symbols-outlined text-[18px]" aria-hidden="true">add</span>
-          <span>Novo Lead</span>
-        </button>
       </div>
     </div>
   );

@@ -1,7 +1,5 @@
-import { useMemo, useState, useEffect } from 'react';
-import { onSnapshot, query, orderBy } from 'firebase/firestore';
+import { useMemo, useState } from 'react';
 import type { Lead, LeadStatus } from '../../../types/auth';
-import { leadsCollection } from '../../../services/firebase/firestore';
 import { updateLeadStatus } from '../../../services/leads/updateLeadStatus';
 import { LeadsHeader } from './LeadsHeader';
 import { LeadsToolbar } from './LeadsToolbar';
@@ -10,27 +8,19 @@ import { Pagination } from './Pagination';
 
 const PAGE_SIZE = 10;
 
-function getInitials(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0 || !parts[0]) return '?';
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+interface LeadsSectionProps {
+  leads?: Lead[];
+  isLoading?: boolean;
+  error?: string | null;
+  onViewDetails?: (lead: Lead) => void;
 }
 
-function normalizeStatus(rawStatus?: unknown): LeadStatus {
-  if (typeof rawStatus === 'string') {
-    const upper = rawStatus.toUpperCase().trim();
-    if (upper === 'NOVO' || upper === 'EM_CONTATO' || upper === 'CONVERTIDO' || upper === 'PERDIDO') {
-      return upper;
-    }
-  }
-  return 'NOVO';
-}
-
-export function LeadsSection() {
-  const [leads, setLeads] = useState<Lead[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export function LeadsSection({
+  leads = [],
+  isLoading = false,
+  error = null,
+  onViewDetails,
+}: LeadsSectionProps) {
   // Filter state
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
@@ -42,70 +32,6 @@ export function LeadsSection() {
 
   // Action menu state — only one open at a time
   const [activeActionLeadId, setActiveActionLeadId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const q = query(leadsCollection as any, orderBy('createdAt', 'desc'));
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const fetchedLeads: Lead[] = snapshot.docs.map((doc) => {
-          const data: any = doc.data() || {};
-          let createdAtStr = '';
-          if (data.createdAt) {
-            try {
-              const date = typeof data.createdAt.toDate === 'function' 
-                ? data.createdAt.toDate() 
-                : new Date(data.createdAt);
-              if (!isNaN(date.getTime())) {
-                createdAtStr = new Intl.DateTimeFormat('pt-BR', {
-                  dateStyle: 'short',
-                  timeStyle: 'short',
-                }).format(date);
-              }
-            } catch {
-              createdAtStr = String(data.createdAt || '');
-            }
-          }
-
-          const name = String(data.name || 'Sem nome');
-          const initials = typeof data.initials === 'string' && data.initials ? data.initials : getInitials(name);
-          const status = normalizeStatus(data.status);
-          const unit = (data.unit && String(data.unit).toUpperCase() === 'TIMON') ? 'TIMON' : 'TERESINA';
-          const whatsapp = String(data.whatsapp || data.phone || '');
-          const rawDigits = whatsapp.replace(/\D/g, '');
-          const whatsappUrl = data.whatsappUrl || (rawDigits ? `https://wa.me/55${rawDigits}` : '#');
-          const model = String(data.model || 'outro');
-          const modelDisplay = String(data.modelDisplay || data.model || 'Modelo não especificado');
-          const email = String(data.email || '');
-
-          return {
-            id: doc.id,
-            name,
-            initials,
-            email,
-            whatsapp,
-            whatsappUrl,
-            model,
-            modelDisplay,
-            unit,
-            status,
-            createdAt: createdAtStr,
-          };
-        });
-
-        setLeads(fetchedLeads);
-        setIsLoading(false);
-        setError(null);
-      },
-      (err) => {
-        console.error('Error fetching leads:', err);
-        setError('Não foi possível carregar os leads.');
-        setIsLoading(false);
-      }
-    );
-
-    return () => unsubscribe();
-  }, []);
 
   // ------------------------------------------------------------------
   // Derived: filtered collection
@@ -164,13 +90,6 @@ export function LeadsSection() {
   };
   const handleCloseAction = () => setActiveActionLeadId(null);
 
-  // Integration-point handlers
-  const handleViewDetails = (_lead: Lead) => {
-    // TODO: open lead detail drawer/modal when implemented
-  };
-  const handleChangeStatus = (_lead: Lead) => {
-    // Handled directly via inline status badge dropdown and action trigger
-  };
   const handleStatusChangeAction = async (leadId: string, newStatus: LeadStatus) => {
     await updateLeadStatus(leadId, newStatus);
   };
@@ -197,8 +116,7 @@ export function LeadsSection() {
         activeActionLeadId={activeActionLeadId}
         onToggleAction={handleToggleAction}
         onCloseAction={handleCloseAction}
-        onViewDetails={handleViewDetails}
-        onChangeStatus={handleChangeStatus}
+        onViewDetails={onViewDetails}
         onStatusChange={handleStatusChangeAction}
       />
 
