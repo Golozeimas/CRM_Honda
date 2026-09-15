@@ -45,6 +45,7 @@ Cálculo Dinâmico dos KPIs do Funil
   - **Tabela de Leads Completa (`LeadsTable.tsx`)**:
     - Listagem dinâmica sincronizada em tempo real com o Cloud Firestore (`onSnapshot`).
     - Filtro combinado por texto (busca por Nome ou WhatsApp), Status, Unidade e Modelo.
+    - Paginação client-side configurada para 10 itens por página.
     - **Alteração de Status Inline**: dropdown interativo diretamente na coluna de status, com feedback visual e toast notifications.
     - Link direto para abertura de conversa no WhatsApp via API `wa.me`.
   - **Modal de Detalhes do Lead (`LeadDetailsModal.tsx`)**:
