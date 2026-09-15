@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { onSnapshot, query, orderBy } from 'firebase/firestore';
 import type { Lead, LeadStatus } from '../../../types/auth';
 import { leadsCollection } from '../../../services/firebase/firestore';
+import { updateLeadStatus } from '../../../services/leads/updateLeadStatus';
 import { LeadsHeader } from './LeadsHeader';
 import { LeadsToolbar } from './LeadsToolbar';
 import { LeadsTable } from './LeadsTable';
@@ -163,12 +164,15 @@ export function LeadsSection() {
   };
   const handleCloseAction = () => setActiveActionLeadId(null);
 
-  // Integration-point handlers (no workflow implemented)
+  // Integration-point handlers
   const handleViewDetails = (_lead: Lead) => {
     // TODO: open lead detail drawer/modal when implemented
   };
   const handleChangeStatus = (_lead: Lead) => {
-    // TODO: open status change dialog when implemented
+    // Handled directly via inline status badge dropdown and action trigger
+  };
+  const handleStatusChangeAction = async (leadId: string, newStatus: LeadStatus) => {
+    await updateLeadStatus(leadId, newStatus);
   };
 
   return (
@@ -195,6 +199,7 @@ export function LeadsSection() {
         onCloseAction={handleCloseAction}
         onViewDetails={handleViewDetails}
         onChangeStatus={handleChangeStatus}
+        onStatusChange={handleStatusChangeAction}
       />
 
       <Pagination

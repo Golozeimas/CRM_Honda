@@ -1,4 +1,4 @@
-import type { Lead } from '../../../types/auth';
+import type { Lead, LeadStatus } from '../../../types/auth';
 import { LeadRow } from './LeadRow';
 
 interface LeadsTableProps {
@@ -10,6 +10,7 @@ interface LeadsTableProps {
   onCloseAction: () => void;
   onViewDetails?: (lead: Lead) => void;
   onChangeStatus?: (lead: Lead) => void;
+  onStatusChange?: (leadId: string, newStatus: LeadStatus) => Promise<void>;
 }
 
 const TABLE_HEADERS = [
@@ -31,6 +32,7 @@ export function LeadsTable({
   onCloseAction,
   onViewDetails,
   onChangeStatus,
+  onStatusChange,
 }: LeadsTableProps) {
   return (
     <div className="overflow-x-auto">
@@ -83,6 +85,7 @@ export function LeadsTable({
                 onCloseAction={onCloseAction}
                 onViewDetails={onViewDetails}
                 onChangeStatus={onChangeStatus}
+                onStatusChange={onStatusChange}
               />
             ))
           )}

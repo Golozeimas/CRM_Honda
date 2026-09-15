@@ -1,6 +1,7 @@
-import type { Lead } from '../../../types/auth';
+import { useState } from 'react';
+import type { Lead, LeadStatus } from '../../../types/auth';
 import { LeadIdentity } from './LeadIdentity';
-import { LeadStatus } from './LeadStatus';
+import { LeadStatus as LeadStatusBadge } from './LeadStatus';
 import { LeadActions } from './LeadActions';
 
 interface LeadRowProps {
@@ -10,6 +11,7 @@ interface LeadRowProps {
   onCloseAction: () => void;
   onViewDetails?: (lead: Lead) => void;
   onChangeStatus?: (lead: Lead) => void;
+  onStatusChange?: (leadId: string, newStatus: LeadStatus) => Promise<void>;
 }
 
 export function LeadRow({
@@ -19,7 +21,15 @@ export function LeadRow({
   onCloseAction,
   onViewDetails,
   onChangeStatus,
+  onStatusChange,
 }: LeadRowProps) {
+  const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
+
+  const handleTriggerChangeStatus = () => {
+    setIsStatusDropdownOpen(true);
+    onChangeStatus?.(lead);
+  };
+
   return (
     <tr className="hover:bg-surface-container-low/70 transition-colors group">
       {/* Lead identity */}
@@ -60,7 +70,13 @@ export function LeadRow({
 
       {/* Status */}
       <td className="py-space-md px-space-sm">
-        <LeadStatus status={lead.status} />
+        <LeadStatusBadge
+          leadId={lead.id}
+          status={lead.status}
+          isOpen={isStatusDropdownOpen}
+          onToggleOpen={setIsStatusDropdownOpen}
+          onStatusChange={onStatusChange}
+        />
       </td>
 
       {/* Created at */}
@@ -76,7 +92,7 @@ export function LeadRow({
           onToggle={onToggleAction}
           onClose={onCloseAction}
           onViewDetails={onViewDetails}
-          onChangeStatus={onChangeStatus}
+          onChangeStatus={handleTriggerChangeStatus}
         />
       </td>
     </tr>
