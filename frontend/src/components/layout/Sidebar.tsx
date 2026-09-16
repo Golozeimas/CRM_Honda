@@ -6,28 +6,49 @@ const NAV_ITEMS = [
   { path: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
 ] as const;
 
-export function Sidebar() {
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
+    onClose?.();
     await logout();
     navigate('/login');
   };
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-[240px] bg-surface-container-lowest z-50 flex flex-col justify-between border-r border-surface-container-highest shadow-[0_1px_8px_rgba(0,0,0,0.02)]">
+    <aside
+      className={`fixed left-0 top-0 h-full w-[240px] bg-surface-container-lowest z-50 flex flex-col justify-between border-r border-surface-container-highest shadow-[0_1px_8px_rgba(0,0,0,0.02)] transition-transform duration-300 ease-in-out md:translate-x-0 ${
+        isOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}
+    >
       <div className="flex flex-col">
         {/* Branding */}
-        <div className="h-16 px-space-md flex items-center gap-space-sm border-b border-surface-container-highest">
-          <img
-            src={logoUrl}
-            alt="Sol Nascente CRM Honda"
-            className="w-8 h-8 rounded-lg object-cover flex-shrink-0"
-          />
-          <div className="flex flex-col min-w-0">
-            <span className="font-label-lg text-on-surface truncate leading-tight">Sol Nascente</span>
-            <span className="font-label-sm text-primary uppercase font-bold tracking-wider">CRM Honda</span>
+        <div className="h-16 px-space-md flex items-center justify-between border-b border-surface-container-highest">
+          <div className="flex items-center gap-space-sm min-w-0">
+            <img
+              src={logoUrl}
+              alt="Sol Nascente CRM Honda"
+              className="w-8 h-8 rounded-lg object-cover flex-shrink-0"
+            />
+            <div className="flex flex-col min-w-0">
+              <span className="font-label-lg text-on-surface truncate leading-tight">Sol Nascente</span>
+              <span className="font-label-sm text-primary uppercase font-bold tracking-wider">CRM Honda</span>
+            </div>
           </div>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="md:hidden p-1 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container transition-colors cursor-pointer"
+              aria-label="Fechar menu"
+            >
+              <span className="material-symbols-outlined text-[20px]">close</span>
+            </button>
+          )}
         </div>
 
         {/* Navigation */}
@@ -37,6 +58,7 @@ export function Sidebar() {
               key={path}
               to={path}
               end
+              onClick={() => onClose?.()}
               className={({ isActive }) =>
                 isActive
                   ? 'flex items-center gap-space-sm px-space-sm py-space-sm rounded-xl bg-primary-container text-on-primary font-bold shadow-sm transition-colors'

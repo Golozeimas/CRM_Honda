@@ -40,7 +40,7 @@ export function LeadsTable({
 }: LeadsTableProps) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-left">
+      <table className="w-full min-w-[720px] text-left">
         <thead>
           <tr className="bg-surface-container-low text-secondary font-label-sm uppercase tracking-wider rounded-lg">
             {TABLE_HEADERS.map(({ label, className }) => (
