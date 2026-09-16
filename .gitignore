@@ -221,5 +221,3 @@ firebase.json.local
 .vercel/
 .netlify/
 .render/
-
-.geminiignore
