@@ -5,6 +5,7 @@ export interface ModelData {
   badge: string;
   description: string;
   priceText: string;
+  imageUrl?: string;
 }
 
 interface ModelCardProps {
@@ -20,6 +21,16 @@ export function ModelCard({ model, onSelect }: ModelCardProps) {
           <span className="bg-[#1F2937] text-white text-[11px] font-bold px-2 py-0.5 rounded">{model.tag}</span>
           <span className="text-tertiary font-label-sm text-label-sm font-bold">{model.badge}</span>
         </div>
+        {model.imageUrl && (
+          <div className="w-full aspect-video my-3 overflow-hidden rounded-lg bg-surface-container">
+            <img
+              src={model.imageUrl}
+              alt={model.name}
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+            />
+          </div>
+        )}
         <h4 className="font-headline-md text-headline-md text-on-surface mb-1">{model.name}</h4>
         <p className="font-body-sm text-body-sm text-secondary mb-3">{model.description}</p>
       </div>

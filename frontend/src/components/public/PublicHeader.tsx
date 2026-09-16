@@ -1,12 +1,16 @@
+import logoUrl from '../../assets/logo_sol_nascente.jpg';
+
 export function PublicHeader() {
   return (
     <header className="w-full bg-surface-container-lowest shadow-sm sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-margin py-space-sm flex items-center justify-between">
         <div className="flex items-center gap-space-md">
           <div className="flex items-center gap-space-xs">
-            <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-on-primary font-headline-lg shadow-sm">
-              <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>sports_motorsports</span>
-            </div>
+            <img
+              src={logoUrl}
+              alt="Sol Nascente Honda"
+              className="w-9 h-9 rounded-lg object-cover shadow-sm flex-shrink-0"
+            />
             <div className="flex flex-col">
               <span className="font-headline-md text-headline-md tracking-tight leading-none text-on-surface uppercase">Sol Nascente</span>
               <div className="flex items-center gap-1 mt-0.5">
@@ -21,11 +25,6 @@ export function PublicHeader() {
               Modelos
               <span className="material-symbols-outlined text-[16px]">expand_more</span>
             </a>
-            <a className="font-label-lg text-label-lg text-secondary hover:text-primary transition-colors flex items-center gap-1" href="#consorcio">
-              Consórcio Honda
-              <span className="bg-primary/10 text-primary text-[10px] font-bold px-1.5 py-0.5 rounded">Tabelas 2025</span>
-            </a>
-            <a className="font-label-lg text-label-lg text-secondary hover:text-primary transition-colors" href="#pos-venda">Pós-Venda</a>
             <a className="font-label-lg text-label-lg text-secondary hover:text-primary transition-colors" href="#unidades">Unidades</a>
           </div>
         </div>

@@ -4,6 +4,10 @@ import { PublicFooter } from '../components/public/PublicFooter';
 import { ModelCard, type ModelData } from '../components/public/ModelCard';
 import { UnitCard, type UnitData } from '../components/public/UnitCard';
 import { LeadCaptureForm, type LeadCaptureFormRef } from '../components/public/LeadCaptureForm';
+import cg160Img from '../assets/CG160.jpg';
+import bizImg from '../assets/HondaBIZ.jpg';
+import nxr160Img from '../assets/NXR160.jpg';
+import cb300Img from '../assets/CB300F.jpg';
 
 const models: ModelData[] = [
   {
@@ -12,7 +16,8 @@ const models: ModelData[] = [
     badge: 'Em Estoque',
     name: 'Honda CG 160',
     description: 'A motocicleta mais vendida do Brasil, econômica e robusta.',
-    priceText: 'R$ 389,00/mês'
+    priceText: 'R$ 389,00/mês',
+    imageUrl: cg160Img
   },
   {
     id: 'biz',
@@ -20,7 +25,8 @@ const models: ModelData[] = [
     badge: 'Pronta Entrega',
     name: 'Honda Biz',
     description: 'Praticidade com porta-capacete e câmbio semiautomático.',
-    priceText: 'R$ 349,00/mês'
+    priceText: 'R$ 349,00/mês',
+    imageUrl: bizImg
   },
   {
     id: 'nxr160',
@@ -28,7 +34,8 @@ const models: ModelData[] = [
     badge: 'Últimas Unidades',
     name: 'Honda NXR 160 Bros',
     description: 'Suspensão de longo curso para qualquer tipo de terreno.',
-    priceText: 'R$ 459,00/mês'
+    priceText: 'R$ 459,00/mês',
+    imageUrl: nxr160Img
   },
   {
     id: 'cb300',
@@ -36,7 +43,8 @@ const models: ModelData[] = [
     badge: 'Lançamento',
     name: 'Honda CB 300F',
     description: 'Design esportivo, embreagem assistida e iluminação full LED.',
-    priceText: 'R$ 549,00/mês'
+    priceText: 'R$ 549,00/mês',
+    imageUrl: cb300Img
   }
 ];
 
