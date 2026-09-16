@@ -104,12 +104,12 @@ export function LeadDeleteConfirmModal({
           </p>
 
           {/* Action buttons */}
-          <div className="pt-2 flex items-center justify-end gap-2.5">
+          <div className="pt-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5">
             <button
               type="button"
               onClick={onClose}
               disabled={isDeleting}
-              className="px-4 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md font-semibold transition-colors cursor-pointer disabled:opacity-50"
+              className="w-full sm:w-auto justify-center px-4 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md font-semibold transition-colors cursor-pointer disabled:opacity-50"
             >
               Cancelar
             </button>
@@ -117,7 +117,7 @@ export function LeadDeleteConfirmModal({
               type="button"
               onClick={handleConfirmDelete}
               disabled={isDeleting}
-              className="px-4 py-2 rounded-xl bg-error hover:bg-[#b3261e] text-on-error font-label-md font-semibold shadow-sm flex items-center gap-2 transition-all cursor-pointer disabled:opacity-60"
+              className="w-full sm:w-auto justify-center px-4 py-2 rounded-xl bg-error hover:bg-[#b3261e] text-on-error font-label-md font-semibold shadow-sm flex items-center gap-2 transition-all cursor-pointer disabled:opacity-60"
             >
               {isDeleting ? (
                 <>

@@ -101,7 +101,7 @@ export const LeadCaptureForm = forwardRef<LeadCaptureFormRef, LeadCaptureFormPro
   return (
     <div className="flex flex-col gap-space-md">
       {/* Card Principal de Conversão */}
-      <div className="bg-surface-container-lowest rounded-xl shadow-xl p-space-lg relative overflow-hidden transition-all duration-300">
+      <div className="bg-surface-container-lowest rounded-xl shadow-xl p-4 sm:p-space-lg relative overflow-hidden transition-all duration-300">
         {/* Borda Vermelha de Destaque Honda */}
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-primary"></div>
 
@@ -452,9 +452,9 @@ export const LeadCaptureForm = forwardRef<LeadCaptureFormRef, LeadCaptureFormPro
       </div>
 
       {/* Canal Rápido Direto no WhatsApp */}
-      <div className="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex items-center justify-between">
+      <div className="bg-surface-container-lowest p-3.5 sm:p-space-md rounded-xl shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-tertiary/10 text-tertiary flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full bg-tertiary/10 text-tertiary flex items-center justify-center flex-shrink-0">
             <span className="material-symbols-outlined text-[24px]">perm_phone_msg</span>
           </div>
           <div>
@@ -465,7 +465,7 @@ export const LeadCaptureForm = forwardRef<LeadCaptureFormRef, LeadCaptureFormPro
           </div>
         </div>
         <a
-          className="px-3.5 py-2 rounded-lg bg-tertiary text-on-tertiary font-label-md text-label-md font-bold flex items-center gap-1.5 hover:bg-[#005236] transition-colors"
+          className="w-full sm:w-auto justify-center px-3.5 py-2 rounded-lg bg-tertiary text-on-tertiary font-label-md text-label-md font-bold flex items-center gap-1.5 hover:bg-[#005236] transition-colors"
           href="https://wa.me/5586999999999"
           target="_blank"
           rel="noreferrer"

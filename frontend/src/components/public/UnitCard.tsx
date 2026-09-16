@@ -13,7 +13,7 @@ interface UnitCardProps {
 
 export function UnitCard({ unit, onSelect }: UnitCardProps) {
   return (
-    <div className="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
+    <div className="bg-surface-container-lowest p-4 sm:p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="font-headline-md text-headline-md text-on-surface font-bold">{unit.name}</h3>

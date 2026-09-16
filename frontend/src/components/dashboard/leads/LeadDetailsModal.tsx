@@ -55,11 +55,11 @@ export function LeadDetailsModal({
       aria-modal="true"
       aria-labelledby="modal-title"
     >
-      <div className="relative w-full max-w-lg bg-surface-container-lowest rounded-2xl shadow-2xl border border-surface-container-highest overflow-hidden flex flex-col">
+      <div className="relative w-full max-w-lg max-h-[90vh] bg-surface-container-lowest rounded-2xl shadow-2xl border border-surface-container-highest overflow-hidden flex flex-col">
         {/* Modal Header */}
-        <div className="px-6 py-5 border-b border-surface-container-highest flex items-center justify-between">
+        <div className="px-4 py-4 sm:px-6 sm:py-5 border-b border-surface-container-highest flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
               <span className="material-symbols-outlined text-[22px]">badge</span>
             </div>
             <div>
@@ -82,9 +82,9 @@ export function LeadDetailsModal({
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 flex flex-col gap-5">
+        <div className="p-4 sm:p-6 overflow-y-auto flex flex-col gap-4 sm:gap-5">
           {/* Identity card */}
-          <div className="flex items-center justify-between p-4 rounded-xl bg-surface-container-low">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 sm:p-4 rounded-xl bg-surface-container-low">
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-12 h-12 rounded-full bg-primary-fixed text-primary font-headline-md font-bold flex items-center justify-center flex-shrink-0">
                 {lead.initials}
@@ -99,7 +99,7 @@ export function LeadDetailsModal({
               </div>
             </div>
 
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 self-start sm:self-auto">
               <LeadStatus status={lead.status} leadId={lead.id} />
             </div>
           </div>
@@ -168,21 +168,21 @@ export function LeadDetailsModal({
         </div>
 
         {/* Modal Footer */}
-        <div className="px-6 py-4 bg-surface-container-low border-t border-surface-container-highest flex items-center justify-between">
+        <div className="px-4 py-3 sm:px-6 sm:py-4 bg-surface-container-low border-t border-surface-container-highest flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-2.5">
           <button
             type="button"
             onClick={handleDelete}
-            className="px-4 py-2 rounded-xl text-error hover:bg-error-container/40 font-label-md font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="w-full sm:w-auto justify-center px-4 py-2 rounded-xl text-error hover:bg-error-container/40 font-label-md font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <span className="material-symbols-outlined text-[18px]">delete</span>
             <span>Excluir lead</span>
           </button>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <button
               type="button"
               onClick={handleEdit}
-              className="px-4 py-2 rounded-xl bg-primary hover:bg-[#cc0000] text-on-primary font-label-md font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="flex-1 sm:flex-none justify-center px-4 py-2 rounded-xl bg-primary hover:bg-[#cc0000] text-on-primary font-label-md font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <span className="material-symbols-outlined text-[18px]">edit</span>
               <span>Editar dados</span>
@@ -190,7 +190,7 @@ export function LeadDetailsModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-surface-container-highest hover:bg-surface-container text-on-surface font-label-md font-semibold transition-colors cursor-pointer"
+              className="flex-1 sm:flex-none justify-center px-4 py-2 rounded-xl bg-surface-container-highest hover:bg-surface-container text-on-surface font-label-md font-semibold transition-colors cursor-pointer"
             >
               Fechar
             </button>

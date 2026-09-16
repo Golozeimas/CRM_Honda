@@ -95,7 +95,7 @@ export function LoginForm() {
 
       {/* Password field */}
       <div className="flex flex-col gap-1.5">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-1">
           <label htmlFor="login-password" className="font-label-lg text-label-lg font-semibold text-on-surface">
             Senha
           </label>

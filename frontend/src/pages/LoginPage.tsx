@@ -22,7 +22,7 @@ export function LoginPage() {
         {/* Red top accent bar */}
         <div className="h-1.5 w-full bg-primary" />
 
-        <div className="px-8 py-8 flex flex-col gap-space-lg">
+        <div className="px-4 py-6 sm:px-8 sm:py-8 flex flex-col gap-space-md sm:gap-space-lg">
           {/* Brand */}
           <div className="flex flex-col items-center gap-3 text-center">
             <img
@@ -31,7 +31,7 @@ export function LoginPage() {
               className="w-14 h-14 rounded-2xl object-cover shadow-md"
             />
             <div className="flex flex-col items-center gap-0.5">
-              <span className="font-headline-xl text-headline-xl text-on-surface font-bold tracking-tight uppercase leading-none">
+              <span className="text-xl sm:text-headline-xl text-on-surface font-bold tracking-tight uppercase leading-none">
                 Sol Nascente - CRM
               </span>
               <div className="flex items-center mt-1">
@@ -58,8 +58,8 @@ export function LoginPage() {
         </div>
 
         {/* Footer */}
-        <div className="bg-surface-container px-8 py-3 flex items-center justify-center gap-1.5">
-          <span className="material-symbols-outlined text-[14px] text-tertiary">verified_user</span>
+        <div className="bg-surface-container px-4 py-3 sm:px-8 flex items-center justify-center gap-1.5 text-center">
+          <span className="material-symbols-outlined text-[14px] text-tertiary flex-shrink-0">verified_user</span>
           <span className="font-label-sm text-label-sm text-secondary">
             Acesso restrito · Dados protegidos pela LGPD
           </span>

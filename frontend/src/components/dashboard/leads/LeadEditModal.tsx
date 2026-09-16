@@ -113,11 +113,11 @@ function LeadEditDialog({ lead, onClose, onSuccess }: LeadEditDialogProps) {
       aria-modal="true"
       aria-labelledby="edit-modal-title"
     >
-      <div className="relative w-full max-w-lg bg-surface-container-lowest rounded-2xl shadow-2xl border border-surface-container-highest overflow-hidden flex flex-col">
+      <div className="relative w-full max-w-lg max-h-[90vh] bg-surface-container-lowest rounded-2xl shadow-2xl border border-surface-container-highest overflow-hidden flex flex-col">
         {/* Modal Header */}
-        <div className="px-6 py-5 border-b border-surface-container-highest flex items-center justify-between">
+        <div className="px-4 py-4 sm:px-6 sm:py-5 border-b border-surface-container-highest flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
               <span className="material-symbols-outlined text-[22px]">edit</span>
             </div>
             <div>
@@ -141,7 +141,7 @@ function LeadEditDialog({ lead, onClose, onSuccess }: LeadEditDialogProps) {
         </div>
 
         {/* Modal Form */}
-        <form onSubmit={handleSubmit} noValidate className="p-6 flex flex-col gap-4">
+        <form onSubmit={handleSubmit} noValidate className="p-4 sm:p-6 overflow-y-auto flex flex-col gap-4">
           {/* Nome completo */}
           <div>
             <label className="block font-label-md text-on-surface mb-1 font-semibold" htmlFor="edit-name">
@@ -291,19 +291,19 @@ function LeadEditDialog({ lead, onClose, onSuccess }: LeadEditDialogProps) {
           </div>
 
           {/* Modal Actions */}
-          <div className="pt-3 flex items-center justify-end gap-2 border-t border-surface-container-highest">
+          <div className="pt-3 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 border-t border-surface-container-highest">
             <button
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-4 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md font-semibold transition-colors cursor-pointer disabled:opacity-50"
+              className="w-full sm:w-auto justify-center px-4 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md font-semibold transition-colors cursor-pointer disabled:opacity-50"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2 rounded-xl bg-primary hover:bg-[#cc0000] text-on-primary font-label-md font-semibold shadow-sm flex items-center gap-2 transition-all cursor-pointer disabled:opacity-60"
+              className="w-full sm:w-auto justify-center px-5 py-2 rounded-xl bg-primary hover:bg-[#cc0000] text-on-primary font-label-md font-semibold shadow-sm flex items-center gap-2 transition-all cursor-pointer disabled:opacity-60"
             >
               {isSubmitting ? (
                 <>

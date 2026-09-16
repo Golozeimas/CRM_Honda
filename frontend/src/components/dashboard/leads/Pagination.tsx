@@ -45,7 +45,7 @@ export function Pagination({
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-space-sm pt-space-sm">
       {/* Summary */}
-      <span className="font-body-sm text-secondary">
+      <span className="font-body-sm text-secondary text-center sm:text-left">
         Mostrando{' '}
         <span className="font-semibold text-on-surface">
           {firstItem} a {lastItem}
@@ -55,7 +55,7 @@ export function Pagination({
       </span>
 
       {/* Page buttons */}
-      <div className="flex items-center gap-space-xs" role="navigation" aria-label="Paginação">
+      <div className="flex flex-wrap items-center justify-center gap-space-xs" role="navigation" aria-label="Paginação">
         {/* Previous */}
         <button
           onClick={() => onPageChange(currentPage - 1)}

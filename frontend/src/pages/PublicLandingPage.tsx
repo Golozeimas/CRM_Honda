@@ -88,13 +88,13 @@ export function PublicLandingPage() {
 
   return (
     <div className="bg-background font-body-md text-on-surface antialiased">
-      <main className="min-h-screen w-full flex items-center justify-center p-space-md">
+      <main className="min-h-screen w-full flex items-center justify-center p-0 sm:p-space-md">
         <div className="flex flex-col w-full">
           <PublicHeader />
 
           {/* Hero Content Area */}
-          <section className="relative w-full overflow-hidden bg-gradient-to-b from-surface to-surface-container-low pt-space-lg pb-space-xl">
-            <div className="max-w-7xl mx-auto px-margin">
+          <section className="relative w-full overflow-hidden bg-gradient-to-b from-surface to-surface-container-low pt-space-md sm:pt-space-lg pb-space-xl">
+            <div className="max-w-7xl mx-auto px-4 sm:px-margin">
               {/* Badge and Announcement */}
               <div className="flex flex-wrap items-center gap-2 mb-space-md">
                 <span className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1 rounded-full font-label-sm text-label-sm font-bold uppercase tracking-wider">
@@ -108,7 +108,7 @@ export function PublicLandingPage() {
                 {/* Left Column: Copy + Showroom Motorcycle Showcase */}
                 <div className="lg:col-span-7 flex flex-col gap-space-lg">
                   <div className="space-y-space-sm">
-                    <h1 className="font-headline-xl text-headline-xl md:text-[40px] md:leading-[46px] text-on-surface tracking-tight">
+                    <h1 className="font-headline-xl text-2xl sm:text-headline-xl md:text-[40px] md:leading-[46px] text-on-surface tracking-tight">
                       Encontre sua <span className="text-primary underline decoration-primary/30 underline-offset-4">próxima Honda</span> zero km.
                     </h1>
                     <p className="font-body-lg text-body-lg text-secondary max-w-xl">
@@ -147,7 +147,7 @@ export function PublicLandingPage() {
                   </div>
 
                   {/* Proof Badges */}
-                  <div className="grid grid-cols-3 gap-space-sm pt-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-space-sm pt-2">
                     <div className="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-1">
                       <div className="flex items-center gap-1.5 text-primary">
                         <span className="material-symbols-outlined text-[20px]">schedule</span>
@@ -182,7 +182,7 @@ export function PublicLandingPage() {
 
           {/* Popular Models Catalog Strip */}
           <section className="w-full bg-surface-container-lowest py-space-xl" id="modelos">
-            <div className="max-w-7xl mx-auto px-margin">
+            <div className="max-w-7xl mx-auto px-4 sm:px-margin">
               <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-space-lg gap-2">
                 <div>
                   <span className="text-primary font-label-sm text-label-sm font-bold uppercase tracking-wider">Garagem Sol Nascente</span>
@@ -203,7 +203,7 @@ export function PublicLandingPage() {
 
           {/* Dealership Units & Location Section */}
           <section className="w-full bg-surface-container-low py-space-xl" id="unidades">
-            <div className="max-w-7xl mx-auto px-margin">
+            <div className="max-w-7xl mx-auto px-4 sm:px-margin">
               <div className="text-center max-w-xl mx-auto mb-space-lg">
                 <span className="text-primary font-label-sm text-label-sm font-bold uppercase tracking-wider">Rede Sol Nascente</span>
                 <h2 className="font-headline-lg text-headline-lg text-on-surface">Nossas Concessionárias</h2>
