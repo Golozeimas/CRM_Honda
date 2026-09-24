@@ -153,7 +153,7 @@ export function LeadsSection({
 
   return (
     <div className="bg-surface-container-lowest rounded-xl shadow-sm p-space-md md:p-space-lg flex flex-col gap-space-md">
-      <LeadsHeader />
+      <LeadsHeader leads={filteredLeads} />
 
       <LeadsToolbar
         search={search}
