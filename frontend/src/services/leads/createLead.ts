@@ -1,9 +1,12 @@
 import { addDoc, serverTimestamp, type FieldValue } from 'firebase/firestore';
 import { leadsCollection } from '../firebase/firestore';
 import type { Lead } from '../../types/auth';
+import { emailForPersistence } from './email';
 
 export interface CreateLeadInput {
   name: string;
+  email: string;
+  subscribedToOffers?: boolean;
   phone: string;
   model: string;
   unit: string;
@@ -39,7 +42,9 @@ export async function createLead(input: CreateLeadInput): Promise<string> {
   const data: LeadCreateData = {
     name: normalizedName,
     initials: getInitials(normalizedName),
-    email: '',
+    email: emailForPersistence(input.email),
+    subscribedToOffers: input.subscribedToOffers === true,
+    offersSentCount: 0,
     whatsapp: normalizedPhone,
     whatsappUrl: `https://wa.me/55${rawDigits}`,
     model: input.model,
@@ -49,6 +54,6 @@ export async function createLead(input: CreateLeadInput): Promise<string> {
     createdAt: serverTimestamp(),
   };
 
-  const docRef = await addDoc(leadsCollection as any, data);
+  const docRef = await addDoc(leadsCollection, data);
   return docRef.id;
 }

@@ -28,7 +28,7 @@ export function LeadIdentity({ initials, name, email, status }: LeadIdentityProp
       </div>
       <div className="flex flex-col min-w-0">
         <span className="font-label-lg text-on-surface font-semibold truncate">{name}</span>
-        <span className="font-body-sm text-secondary truncate">{email}</span>
+        <span className="font-body-sm text-secondary truncate">{email?.trim() || 'Sem e-mail'}</span>
       </div>
     </div>
   );

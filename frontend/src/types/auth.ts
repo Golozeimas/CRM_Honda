@@ -7,6 +7,10 @@ export interface Lead {
   /** Avatar initials, e.g. "AP" */
   initials: string;
   email: string;
+  /** Missing on legacy documents means no marketing consent. */
+  subscribedToOffers?: boolean;
+  lastOfferSentAt?: import('firebase/firestore').Timestamp;
+  offersSentCount?: number;
   /** Formatted phone number, e.g. "(86) 98124-9010" */
   whatsapp: string;
   /** wa.me URL derived from the E.164 phone number */

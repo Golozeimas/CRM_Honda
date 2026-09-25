@@ -28,6 +28,8 @@ desktop.ini
 !package-lock.json
 !tsconfig.json
 !tsconfig.*.json
+!frontend/firebase.json
+!frontend/firestore.indexes.json
 
 # Firebase service account keys
 serviceAccount*.json

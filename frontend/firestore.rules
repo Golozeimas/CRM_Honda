@@ -1,0 +1,56 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Auth alone is not authorization: clients can call Firebase's signup API.
+    // Provision this custom claim only with the Admin SDK for trusted staff.
+    function staff() {
+      return request.auth != null && request.auth.token.crmStaff == true;
+    }
+    function validEmail(value) {
+      return value is string && value.size() <= 254 && value == value.lower()
+        && value.matches('^[^\\s@]+@[^\\s@.]+(\\.[^\\s@.]+)+$');
+    }
+    function validStatus(value) {
+      return value in ['NOVO', 'EM_CONTATO', 'CONVERTIDO', 'PERDIDO'];
+    }
+    function text(value, max) { return value is string && value.size() > 0 && value.size() <= max; }
+
+    match /leads/{leadId} {
+      allow read, delete: if staff();
+      allow create: if request.resource.data.keys().hasOnly([
+          'name', 'initials', 'email', 'whatsapp', 'whatsappUrl', 'model',
+          'modelDisplay', 'unit', 'status', 'createdAt', 'subscribedToOffers', 'offersSentCount'
+        ])
+        && text(request.resource.data.name, 200)
+        && text(request.resource.data.initials, 4)
+        && validEmail(request.resource.data.email)
+        && text(request.resource.data.whatsapp, 30)
+        && text(request.resource.data.whatsappUrl, 100)
+        && text(request.resource.data.model, 100)
+        && text(request.resource.data.modelDisplay, 150)
+        && request.resource.data.unit in ['TERESINA', 'TIMON']
+        && request.resource.data.status == 'NOVO'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.subscribedToOffers is bool
+        && request.resource.data.offersSentCount == 0;
+
+      // Server history cannot be changed by a client. Legacy fields remain optional;
+      // validating only affected fields permits status updates on old documents.
+      allow update: if staff()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'name', 'initials', 'email', 'whatsapp', 'whatsappUrl', 'model', 'modelDisplay', 'unit', 'status', 'subscribedToOffers'
+        ])
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['email'])
+          || ((request.resource.data.email == '' || validEmail(request.resource.data.email))
+            && request.resource.data.subscribedToOffers == false))
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['subscribedToOffers'])
+          || request.resource.data.subscribedToOffers == false)
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['status']) || validStatus(request.resource.data.status))
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['unit']) || request.resource.data.unit in ['TERESINA', 'TIMON']);
+    }
+    // Delivery payloads contain personal data and signed tokens. Admin SDK only.
+    match /offerDeliveries/{document=**} { allow read, write: if false; }
+    match /offerJobs/{document=**} { allow read, write: if false; }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

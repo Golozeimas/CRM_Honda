@@ -10,6 +10,7 @@ import {
   collection,
   type CollectionReference,
   type DocumentData,
+  type Timestamp,
 } from 'firebase/firestore';
 import { db } from './config';
 import type { Lead } from '../../types/auth';
@@ -18,4 +19,4 @@ import type { Lead } from '../../types/auth';
 export const leadsCollection = collection(
   db,
   'leads'
-) as CollectionReference<Lead, DocumentData>;
+) as CollectionReference<Omit<Lead, 'id' | 'createdAt'> & { createdAt: Timestamp }, DocumentData>;

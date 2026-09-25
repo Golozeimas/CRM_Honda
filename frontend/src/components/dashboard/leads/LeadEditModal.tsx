@@ -2,6 +2,7 @@ import { useState, useEffect, type FormEvent } from 'react';
 import { toast } from 'react-toastify';
 import type { Lead } from '../../../types/auth';
 import { updateLead, type UpdateLeadInput } from '../../../services/leads/updateLead';
+import { validateEmail } from '../../../services/leads/email';
 
 interface LeadEditModalProps {
   lead: Lead | null;
@@ -51,15 +52,18 @@ function LeadEditDialog({ lead, onClose, onSuccess }: LeadEditDialogProps) {
   const [name, setName] = useState(lead.name || '');
   const [whatsapp, setWhatsapp] = useState(lead.whatsapp || '');
   const [email, setEmail] = useState(lead.email || '');
+  const [unsubscribe, setUnsubscribe] = useState(false);
   const [model, setModel] = useState(lead.model || 'cg160');
   const [unit, setUnit] = useState<'TERESINA' | 'TIMON'>(lead.unit || 'TERESINA');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<{ name?: string; whatsapp?: string; model?: string }>({});
+  const [errors, setErrors] = useState<{ name?: string; whatsapp?: string; model?: string; email?: string }>({});
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    const newErrors: { name?: string; whatsapp?: string; model?: string } = {};
+    const newErrors: typeof errors = {};
+    const emailValidation = validateEmail(email, false);
+    if (emailValidation !== true) newErrors.email = emailValidation;
 
     if (!name.trim() || name.trim().length < 3) {
       newErrors.name = 'O nome deve ter no mínimo 3 caracteres.';
@@ -85,6 +89,7 @@ function LeadEditDialog({ lead, onClose, onSuccess }: LeadEditDialogProps) {
         name: name.trim(),
         whatsapp: whatsapp.trim(),
         email: email.trim(),
+        ...(unsubscribe ? { subscribedToOffers: false as const } : {}),
         model,
         unit,
       };
@@ -220,13 +225,29 @@ function LeadEditDialog({ lead, onClose, onSuccess }: LeadEditDialogProps) {
                   id="edit-email"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setErrors((prev) => ({ ...prev, email: undefined }));
+                  }}
+                  aria-invalid={!!errors.email}
+                  aria-describedby={errors.email ? 'edit-email-error' : undefined}
                   disabled={isSubmitting}
                   className="w-full h-10 pl-10 pr-3 rounded-lg bg-surface-container-low text-on-surface font-body-md focus:outline-none transition-all border border-outline/20 focus:ring-2 focus:ring-primary"
                   placeholder="exemplo@email.com"
                 />
               </div>
+              {errors.email && <span id="edit-email-error" role="alert" className="font-label-sm text-error mt-1 block">{errors.email}</span>}
             </div>
+          </div>
+
+          <div className="font-body-sm text-secondary">
+            {lead.subscribedToOffers === true ? (
+              <label className="flex items-center gap-2">
+                <input type="checkbox" checked={unsubscribe} onChange={(e) => setUnsubscribe(e.target.checked)} disabled={isSubmitting} className="accent-primary" />
+                Cancelar recebimento de ofertas por e-mail
+              </label>
+            ) : <p>Ofertas por e-mail: sem assinatura ativa.</p>}
+            <p className="mt-1">Alterar o e-mail cancela a assinatura do endereço anterior.</p>
           </div>
 
           {/* Modelo e Unidade */}
