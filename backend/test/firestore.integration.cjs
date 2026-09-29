@@ -35,7 +35,7 @@ test('rules: public capture persists normalized email; no reads, control fields 
   for (const email of ['', 'invalid', 'a@@b.com', 'UPPER@example.com', ' a@example.com', 'a@b..com']) {
     await assertFails(setDoc(doc(client, 'leads', 'bad'), { ...data, email }));
   }
-  await assertFails(setDoc(doc(client, 'leads', 'bad'), { ...data, lastOfferSentAt: Timestamp.now() }));
+  await assertFails(setDoc(doc(client, 'leads', 'bad'), { ...data, lastOfferSentAt: serverTimestamp() }));
   await assertFails(setDoc(doc(client, 'leads', 'bad'), { ...data, offersSentCount: 3 }));
   await assertFails(getDoc(doc(client, 'leads', 'public')));
   await assertFails(updateDoc(doc(client, 'leads', 'public'), { subscribedToOffers: false }));
@@ -52,7 +52,7 @@ test('rules: explicit staff authorization, legacy compatibility, opt-out and ser
   await assertFails(updateDoc(doc(staff, 'leads', 'legacy'), { email: 'bad' }));
   await assertFails(updateDoc(doc(staff, 'leads', 'legacy'), { subscribedToOffers: true }));
   await assertFails(updateDoc(doc(staff, 'leads', 'legacy'), { offersSentCount: 99 }));
-  await assertFails(updateDoc(doc(staff, 'leads', 'legacy'), { lastOfferSentAt: Timestamp.now() }));
+  await assertFails(updateDoc(doc(staff, 'leads', 'legacy'), { lastOfferSentAt: serverTimestamp() }));
   await assertFails(setDoc(doc(staff, 'offerDeliveries', 'legacy'), { status: 'accepted' }));
   await assertFails(getDoc(doc(staff, 'offerDeliveries', 'legacy')));
   await assertFails(setDoc(doc(staff, 'offerJobs', 'monthlyOffers'), { cursor: 'tamper' }));
@@ -108,6 +108,63 @@ test('expired ambiguous delivery blocks automatic resend, even after 30 days', a
   assert.equal((await db.doc('leads/lead1').get()).get('offersSentCount'), 0);
 });
 
+test('Firestore commit failure after acceptance recovers without duplicating delivery', async () => {
+  await seed();
+  let now = Date.now(), transactions = 0;
+  const database = new Proxy(db, { get(target, key) {
+    if (key === 'runTransaction') return (...args) => {
+      if (++transactions === 2) return Promise.reject(new Error('Simulated commit failure'));
+      return target.runTransaction(...args);
+    };
+    const value = target[key];
+    return typeof value === 'function' ? value.bind(target) : value;
+  } });
+  const delivered = new Set();
+  const processor = new OfferProcessor(database, { send: async (_payload, key) => { delivered.add(key); return key; } }, message, () => now);
+  await assert.rejects(processor.process('lead1'), /commit failure/);
+  assert.equal((await db.doc('leads/lead1').get()).get('lastOfferSentAt'), undefined);
+  now += LEASE_MS + 1;
+  assert.equal(await processor.process('lead1'), 'accepted');
+  assert.equal(delivered.size, 1);
+  assert.equal((await db.doc('leads/lead1').get()).get('offersSentCount'), 1);
+});
+
+test('opt-out or recipient/status changes during pending delivery prevent further provider calls', async () => {
+  for (const change of [{ subscribedToOffers: false }, { email: 'other@example.com' }, { status: 'CONVERTIDO' }]) {
+    await seed();
+    await db.doc('offerDeliveries/lead1').delete();
+    let now = Date.now(), calls = 0;
+    const processor = new OfferProcessor(db, { send: async () => { calls++; throw new Error('timeout'); } }, message, () => now);
+    assert.equal(await processor.process('lead1'), 'pending');
+    await db.doc('leads/lead1').update(change);
+    now += LEASE_MS + 1;
+    assert.equal(await processor.process('lead1'), 'review');
+    assert.equal(calls, 1);
+  }
+});
+
+test('expired worker lease keeps same cycle and two confirmations increment only once', async () => {
+  await seed();
+  let now = Date.now(), releaseFirst, signalFirst;
+  const firstStarted = new Promise((resolve) => { signalFirst = resolve; });
+  const firstResponse = new Promise((resolve) => { releaseFirst = resolve; });
+  const keys = [];
+  const provider = { send: async (_payload, key) => {
+    keys.push(key);
+    if (keys.length === 1) { signalFirst(); await firstResponse; }
+    return 'same-accepted-id';
+  } };
+  const processor = new OfferProcessor(db, provider, message, () => now);
+  const first = processor.process('lead1');
+  await firstStarted;
+  now += LEASE_MS + 1;
+  assert.equal(await processor.process('lead1'), 'accepted');
+  releaseFirst();
+  assert.equal(await first, 'accepted');
+  assert.equal(new Set(keys).size, 1);
+  assert.equal((await db.doc('leads/lead1').get()).get('offersSentCount'), 1);
+});
+
 test('lead history governs next cycle at exactly 30 days, regardless of scheduler date', async () => {
   await seed();
   let now = Date.now();
@@ -120,6 +177,17 @@ test('lead history governs next cycle at exactly 30 days, regardless of schedule
   assert.equal(await processor.process('lead1'), 'accepted');
   assert.notEqual(keys[0], keys[1]);
   assert.equal((await db.doc('leads/lead1').get()).get('offersSentCount'), 2);
+});
+
+test('inconsistent history never reaches the provider or starts a delivery cycle', async () => {
+  let calls = 0;
+  const processor = new OfferProcessor(db, { send: async () => { calls++; return 'unexpected'; } }, message);
+  for (const change of [{ offersSentCount: 1 }, { lastOfferSentAt: null }, { offersSentCount: -1 }]) {
+    await seed('lead1', change);
+    assert.equal(await processor.process('lead1'), 'skipped');
+    assert.equal((await db.doc('offerDeliveries/lead1').get()).exists, false);
+  }
+  assert.equal(calls, 0);
 });
 
 test('scheduler isolates partial failure, filters candidates, paginates and resets cursor', async () => {
@@ -158,4 +226,19 @@ test('unsubscribe GET is read-only; signed POST is persistent and idempotent', a
   await seed('lead1', { email: 'other@example.com' });
   await handler({ method: 'POST', query: { token } }, response());
   assert.equal((await db.doc('leads/lead1').get()).get('subscribedToOffers'), true);
+});
+
+test('scheduler resumes its saved cursor after deadline and respects a live global lease', async () => {
+  for (let i = 0; i < 4; i++) await seed(`lead${i}`);
+  let now = Date.now();
+  const visited = [];
+  const processor = { process: async (id) => { visited.push(id); now += 200000; return 'skipped'; } };
+  await runOfferBatch(db, processor, () => now);
+  assert.deepEqual(visited, ['lead0', 'lead1']);
+  assert.equal((await db.doc('offerJobs/monthlyOffers').get()).get('cursor'), 'lead1');
+  await runOfferBatch(db, processor, () => now);
+  assert.deepEqual(visited, ['lead0', 'lead1', 'lead2', 'lead3']);
+  assert.equal((await db.doc('offerJobs/monthlyOffers').get()).get('cursor'), '');
+  await db.doc('offerJobs/monthlyOffers').update({ leaseUntil: now + 10000 });
+  assert.deepEqual(await runOfferBatch(db, processor, () => now), { busy: true });
 });

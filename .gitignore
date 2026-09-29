@@ -29,6 +29,7 @@ desktop.ini
 !tsconfig.json
 !tsconfig.*.json
 !frontend/firebase.json
+!firebase.json
 !frontend/firestore.indexes.json
 
 # Firebase service account keys

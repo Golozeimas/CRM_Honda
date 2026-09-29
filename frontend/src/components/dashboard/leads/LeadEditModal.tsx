@@ -232,7 +232,7 @@ function LeadEditDialog({ lead, onClose, onSuccess }: LeadEditDialogProps) {
                   aria-invalid={!!errors.email}
                   aria-describedby={errors.email ? 'edit-email-error' : undefined}
                   disabled={isSubmitting}
-                  className="w-full h-10 pl-10 pr-3 rounded-lg bg-surface-container-low text-on-surface font-body-md focus:outline-none transition-all border border-outline/20 focus:ring-2 focus:ring-primary"
+                  className={`w-full h-10 pl-10 pr-3 rounded-lg bg-surface-container-low text-on-surface font-body-md focus:outline-none transition-all border ${errors.email ? 'border-error focus:ring-2 focus:ring-error' : 'border-outline/20 focus:ring-2 focus:ring-primary'}`}
                   placeholder="exemplo@email.com"
                 />
               </div>

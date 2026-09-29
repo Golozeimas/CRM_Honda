@@ -38,6 +38,7 @@ export const sendPeriodicOffers = onSchedule({
   });
   const result = await runOfferBatch(db, processor);
   logger.info('offers_batch_completed', result);
+  if ('pending' in result && result.pending) logger.warn('offers_pending_retry', { count: result.pending });
   if ('review' in result && result.review) logger.warn('offers_require_reconciliation', { count: result.review });
   if ('failed' in result && result.failed) throw new Error('offers_batch_partial_failure');
 });

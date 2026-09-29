@@ -30,3 +30,17 @@ test('per-lead interval includes exact 30-day boundary, future and malformed his
   assert.equal(isEligibleForOffers({ ...lead, lastOfferSentAt: { toMillis: () => now - OFFER_INTERVAL_MS } }, now), true);
   assert.equal(isEligibleForOffers({ ...lead, lastOfferSentAt: 'invalid' }, now), false);
 });
+
+test('inconsistent delivery history fails closed without breaking legacy first sends', () => {
+  const now = Date.now();
+  assert.equal(isEligibleForOffers({ ...lead, offersSentCount: 0 }, now), true);
+  for (const change of [
+    { lastOfferSentAt: null }, { offersSentCount: 1 },
+    { offersSentCount: -1 }, { offersSentCount: 0.5 },
+    { offersSentCount: '1' }, { offersSentCount: null },
+  ]) {
+    assert.equal(isEligibleForOffers({ ...lead, ...change }, now), false);
+  }
+  assert.equal(isEligibleForOffers({ ...lead, offersSentCount: 1,
+    lastOfferSentAt: { toMillis: () => now - OFFER_INTERVAL_MS } }, now), true);
+});

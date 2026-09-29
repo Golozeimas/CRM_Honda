@@ -29,7 +29,13 @@ export async function runOfferBatch(db: Firestore, processor: OfferProcessor, no
         catch { counts.failed++; }
         cursor = lead.id;
         // If the process dies, resume after the last completed lead, not from page 1.
-        await stateRef.update({ cursor });
+        await db.runTransaction(async (tx) => {
+          const checkpoint = await tx.get(stateRef);
+          if (checkpoint.get('owner') !== owner || checkpoint.get('leaseUntil') <= now()) {
+            throw new Error('offers_job_lease_lost');
+          }
+          tx.update(stateRef, { cursor });
+        });
       }
       if (page.size < 50 && cursor === page.docs[page.size - 1].id) { cursor = ''; break; }
     }
