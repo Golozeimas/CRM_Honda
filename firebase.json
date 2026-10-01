@@ -1,0 +1,19 @@
+{
+  "functions": [{
+    "source": "backend",
+    "codebase": "offers",
+    "runtime": "nodejs22",
+    "ignore": ["node_modules", ".git", "credentials", ".env*", ".secret*", "test", "*.log"],
+    "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"]
+  }],
+  "firestore": { "rules": "frontend/firestore.rules", "indexes": "frontend/firestore.indexes.json" },
+  "emulators": { "firestore": { "port": 8080 }, "ui": { "enabled": false } },
+  "hosting": {
+    "public": "frontend/dist",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      { "source": "/offers/unsubscribe", "function": { "functionId": "unsubscribeOffers", "region": "southamerica-east1" } },
+      { "source": "**", "destination": "/index.html" }
+    ]
+  }
+}

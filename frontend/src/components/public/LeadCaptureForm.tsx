@@ -2,11 +2,14 @@ import { useState, forwardRef, useImperativeHandle } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { createLead } from '../../services/leads/createLead';
+import { normalizeEmail, validateEmail } from '../../services/leads/email';
 
 export type FormState = 'normal' | 'loading' | 'success' | 'error';
 
 export interface LeadFormData {
   name: string;
+  email: string;
+  subscribedToOffers: boolean;
   phone: string;
   model: string;
   unit: string;
@@ -59,6 +62,8 @@ export const LeadCaptureForm = forwardRef<LeadCaptureFormRef, LeadCaptureFormPro
   } = useForm<LeadFormData>({
     defaultValues: {
       name: '',
+      email: '',
+      subscribedToOffers: false,
       phone: '',
       model: '',
       unit: 'teresina'
@@ -153,6 +158,26 @@ export const LeadCaptureForm = forwardRef<LeadCaptureFormRef, LeadCaptureFormPro
                 </span>
               )}
             </div>
+
+            <div>
+              <label className="block font-label-lg text-label-lg text-on-surface mb-1.5 font-semibold" htmlFor="lead-email">E-mail</label>
+              <input
+                {...register('email', { setValueAs: normalizeEmail, validate: (value) => validateEmail(value) })}
+                id="lead-email"
+                type="email"
+                autoComplete="email"
+                placeholder="Digite seu e-mail"
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? 'lead-email-error' : undefined}
+                className={`w-full h-10 px-3 rounded-lg bg-surface-container-lowest text-on-surface font-body-md text-body-md focus:outline-none shadow-sm border ${errors.email ? 'border-error focus:ring-2 focus:ring-error' : 'border-outline/20 focus:ring-2 focus:ring-primary'}`}
+              />
+              {errors.email && <span id="lead-email-error" role="alert" className="font-label-sm text-label-sm text-error mt-1 block">{errors.email.message}</span>}
+            </div>
+
+            <label className="flex items-start gap-2 font-body-sm text-secondary">
+              <input type="checkbox" {...register('subscribedToOffers')} className="mt-1 accent-primary" />
+              Quero receber ofertas da Sol Nascente Motos.
+            </label>
 
             {/* Campo WhatsApp */}
             <div>

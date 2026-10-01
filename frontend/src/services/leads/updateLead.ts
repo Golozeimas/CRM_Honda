@@ -1,5 +1,6 @@
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, runTransaction } from 'firebase/firestore';
 import { db } from '../firebase/config';
+import { emailForPersistence } from './email';
 
 export interface UpdateLeadInput {
   name: string;
@@ -7,6 +8,8 @@ export interface UpdateLeadInput {
   model: string;
   unit: 'TERESINA' | 'TIMON';
   email?: string;
+  /** Dashboard can revoke consent; only the public opt-in can grant it. */
+  subscribedToOffers?: false;
 }
 
 const MODEL_LABELS: Record<string, string> = {
@@ -42,14 +45,21 @@ export async function updateLead(leadId: string, input: UpdateLeadInput): Promis
 
   const leadRef = doc(db, 'leads', leadId);
 
-  await updateDoc(leadRef, {
-    name: normalizedName,
-    initials: getInitials(normalizedName),
-    whatsapp: normalizedWhatsapp,
-    whatsappUrl: rawDigits ? `https://wa.me/55${rawDigits}` : '#',
-    model: input.model,
-    modelDisplay,
-    unit: input.unit,
-    email: (input.email || '').trim(),
+  const email = input.email !== undefined ? emailForPersistence(input.email, false) : undefined;
+  await runTransaction(db, async (transaction) => {
+    const current = await transaction.get(leadRef);
+    if (!current.exists()) throw new Error('Lead não encontrado.');
+    const emailChanged = email !== undefined && email !== current.data().email;
+    transaction.update(leadRef, {
+      name: normalizedName,
+      initials: getInitials(normalizedName),
+      whatsapp: normalizedWhatsapp,
+      whatsappUrl: rawDigits ? `https://wa.me/55${rawDigits}` : '#',
+      model: input.model,
+      modelDisplay,
+      unit: input.unit,
+      ...(email !== undefined ? { email } : {}),
+      ...(emailChanged || input.subscribedToOffers === false ? { subscribedToOffers: false } : {}),
+    });
   });
 }

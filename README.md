@@ -1,5 +1,7 @@
 # Sol Nascente Motos — Mini CRM
 
+> **Ofertas por e-mail:** captura com consentimento, funções agendadas e descadastro estão documentados em [backend/README.md](backend/README.md), incluindo configuração, autorização `crmStaff`, segurança e testes locais. O disparo vem desativado por padrão e exige secrets e conteúdo comercial aprovados.
+
 > Sistema web responsivo de captura, qualificação e gestão em tempo real de leads para a concessionária autorizada **Sol Nascente Motos Honda** (Teresina - PI e Timon - MA).
 
 🔗 **Acesse a aplicação em produção:** [https://hondacrm-efcb2.web.app/](https://hondacrm-efcb2.web.app/)
@@ -94,7 +96,7 @@ A aplicação opera com reatividade ponta a ponta: qualquer lead submetido no si
 - **Firebase Web SDK (`^12.19.0`)**: SDK cliente modular oficial do Google Firebase:
   - **Firebase Authentication**: Gerenciamento de sessões de usuários administrativos.
   - **Cloud Firestore**: Banco de dados NoSQL reativo em tempo real para armazenamento e consulta de leads.
-- **Backend Node.js/Express (`backend/`)**: Serviço auxiliar em TypeScript disponível no repositório com suporte a `firebase-admin` e endpoints dedicados, caso a arquitetura exija transição para API intermediária.
+- **Cloud Functions para Firebase (`backend/`)**: Função agendada para ofertas consentidas e endpoint HTTPS de descadastro, em TypeScript com `firebase-admin`; configuração e testes em [backend/README.md](backend/README.md).
 
 ### Qualidade e Ferramentas
 - **Oxlint (`^1.81.0`)**: Linter de alta velocidade para análise estática e prevenção de bugs.
@@ -161,7 +163,10 @@ leads/{leadId}
 | `id` | `string` | ID único do documento gerado automaticamente. | `"abc123xyz"` |
 | `name` | `string` | Nome completo do lead. | `"João Matheus"` |
 | `initials` | `string` | Iniciais calculadas para o avatar. | `"JM"` |
-| `email` | `string` | E-mail do lead (opcional no formulário público). | `"cliente@email.com"` |
+| `email` | `string` | E-mail normalizado, obrigatório em novos cadastros; ausente/vazio em legados. | `"cliente@email.com"` |
+| `subscribedToOffers` | `boolean` | Consentimento explícito; ausente equivale a `false`. | `true` |
+| `lastOfferSentAt` | `Timestamp` | Última aceitação pelo provedor, gravada apenas pelo backend. | Timestamp do Firestore |
+| `offersSentCount` | `number` | Contador de ofertas aceitas pelo provedor; ausente equivale a zero. | `1` |
 | `whatsapp` | `string` | Número formatado com DDD. | `"(86) 99999-9999"` |
 | `whatsappUrl` | `string` | Link direto para WhatsApp (`wa.me`). | `"https://wa.me/5586999999999"` |
 | `model` | `string` | Código do modelo de interesse. | `"cg160"` |

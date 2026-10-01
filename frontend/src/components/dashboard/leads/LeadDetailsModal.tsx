@@ -94,7 +94,7 @@ export function LeadDetailsModal({
                   {lead.name}
                 </span>
                 <span className="font-body-sm text-secondary truncate">
-                  {lead.email || 'Email não informado'}
+                  {lead.email?.trim() || 'Sem e-mail'}
                 </span>
               </div>
             </div>
